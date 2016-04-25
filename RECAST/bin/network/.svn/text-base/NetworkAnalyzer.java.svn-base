@@ -1,0 +1,145 @@
+package network;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import network.functions.GlobalFunctions;
+import network.graph.Edge;
+import network.graph.Graph;
+import scheduler.Event;
+import scheduler.NodeEvents;
+import scheduler.Scheduler;
+import scheduler.SchedulerInterface;
+import scheduler.SchedulerOneFile;
+import scheduler.SchedulerSeveralFiles;
+
+public class NetworkAnalyzer {
+	
+	Graph g = new Graph(); //time evolving graph
+	Graph G = new Graph(); //aggregated graph
+	
+	public static final int SNAPSHOT_INTERVAL = 6000;
+	public static final int AGGREGATE_GRAPH_INTERVAL = 6000;
+	
+	private long time;
+	PrintWriter out;
+	
+	Integer auxInt=0;
+	Integer numChanges=0;
+	
+	Scheduler scheduler;
+	
+	public NetworkAnalyzer(Scheduler s) throws Exception{
+		
+		File file = new File("outG.txt");
+		FileWriter writer = new FileWriter(file);
+        this.out = new PrintWriter(writer);    
+
+        this.scheduler = s;
+		this.loadGraph();
+    	
+	
+		
+	}
+	
+	public void printFeatures(long time) {
+
+		double changeRate = numChanges/(2.0*(time - this.time)); //2 because we count the edge twice
+		int numComponents = GlobalFunctions.getNumberOfComponents(G);
+		
+		
+		
+		System.out.println(time + ": " + changeRate + " " + numComponents);
+		this.out.println("" + time + " " + changeRate + " " + numComponents);
+		this.numChanges = 0;
+
+	}
+	
+	private void updateGraph(long time) {
+		if( (time - this.time) >= NetworkAnalyzer.AGGREGATE_GRAPH_INTERVAL) {
+			G.aggregateGraph(g);
+			//g.removeDeadEdges();
+			
+			this.printFeatures(time);
+			
+			this.time = time;
+		}
+	}
+
+	public void loadEvent(Event e) {
+		
+		while(e.hasNext()) {
+			NodeEvents ne = e.getNext();
+			//this.numChanges = 0; // += ne.getNumberOfChanges();
+			
+			ArrayList<Edge> clist = ne.cList.getEdgesL();
+			for(int i=0;i<clist.size(); i++)
+				this.numChanges += (g.addEdge(ne.id, clist.get(i))==true) ? 1 : 0;
+			
+			ArrayList<Edge> dlist = ne.dList.getEdgesL();
+			for(int i=0;i<dlist.size(); i++)
+				g.removeEdge(ne.id, dlist.get(i).getNode());
+		}
+		
+		this.updateGraph(e.getTime());
+		
+		
+	}
+	
+	public void takeSnapshot(int ts) {
+		if(ts % NetworkAnalyzer.SNAPSHOT_INTERVAL == 0) {
+            
+			//MFDD
+/*            int mfdd = GlobalFunctions.getMaxFullyDisconnectedDegree(g);
+			if(mfdd > auxInt) {
+				System.out.println(ts + ":" + mfdd);
+				auxInt = mfdd;
+			}
+*/				
+			
+			
+			//Number of components
+			//System.out.println(ts + ":" + GlobalFunctions.getNumberOfComponents(g));
+		}
+		
+	}
+	
+	public void loadGraph() {
+		
+		
+		try {
+			int count = 1;
+			while(this.scheduler.hasNextEvent()) {
+				//System.out.println("\n" + count);
+				count++;
+				Event e = this.scheduler.getNextEvent();
+				this.loadEvent(e);
+				takeSnapshot(count);
+			}
+			out.close();
+
+		} catch(Exception e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		}	
+		
+	}
+	
+	
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		
+		try {
+			//NetworkAnalyzer net = new NetworkAnalyzer(new SchedulerSeveralFiles(SchedulerSeveralFiles.INFOCOM));
+			NetworkAnalyzer net = new NetworkAnalyzer(new SchedulerOneFile(SchedulerOneFile.DARTMOUTH));
+		} catch(Exception e) {
+			e.printStackTrace();
+			System.out.println(e.getMessage());
+		}
+
+
+	}
+
+}

@@ -1,0 +1,162 @@
+package network.graph;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Random;
+
+import network.functions.GlobalFunctions;
+
+public class Graph {
+	
+	HashMap<Integer,EdgeList> edges = new HashMap<Integer,EdgeList>();
+	
+	HashMap<Integer,Node> nodes = new HashMap<Integer,Node>();
+	
+	HashMap<Integer,Integer> componentsSize = new HashMap<Integer,Integer>();
+	
+	public final boolean COMPUTE_COMPONENTS_DYNAMICLY = true;
+	
+	
+	public int getComponentSize(int c) {
+		return this.componentsSize.get(c);
+	}
+	
+	public void updateComponentSize(int c, int size) {
+		this.componentsSize.put(c, size);
+	}
+	
+	public int getNewComponentLabel() {
+		HashSet<Integer> labels = new HashSet<Integer>(this.componentsSize.keySet());
+		Random random = new Random();
+		int label = random.nextInt();
+		while(labels.contains(label))
+			label = random.nextInt();
+		return label;
+	}
+	
+	public void mergeComponents(int c1, int c2) {
+		this.componentsSize.put(c1, this.componentsSize.get(c1) + this.componentsSize.get(c2));
+		this.componentsSize.remove(c2);
+	}
+	
+	public boolean addNode(int nodeid) {
+		if(!edges.containsKey(nodeid)) {
+			edges.put(nodeid, new EdgeList(nodeid));
+			Node node = new Node(nodeid);
+			node.setComponentLabel(this.getNewComponentLabel());
+			nodes.put(nodeid, node);
+			componentsSize.put(node.getComponentLabel(), 1);
+			return true;
+		}
+		return false;
+		
+	}
+	
+	public Node getNode (int id) {
+		return nodes.get(id);
+	}
+	
+	public boolean removeNode(int node) {
+		if(edges.containsKey(node)) {
+			edges.remove(node);
+			return true;
+		}
+		return false;		
+	}
+	
+	public void addEdge(int node1, int node2) {
+		this.addEdge(node1, new Edge(node2, 1.0, (long)0));
+		this.addEdge(node2, new Edge(node1, 1.0, (long)0));
+	}
+
+	
+/*	public void addEdge(int node1, int node2, double weight) {
+		if(!edges.containsKey(node1))
+			this.addNode(node1);
+		if(!edges.containsKey(node2))
+			this.addNode(node2);
+		edges.get(node1).add(node2, weight);
+		edges.get(node2).add(node1, weight);
+	}*/
+	
+	public boolean addEdge(int node1, Edge e) { //false if the edge already existed
+		if(!edges.containsKey(node1)) {
+			this.addNode(node1);
+		}
+		
+		if(this.COMPUTE_COMPONENTS_DYNAMICLY) {
+			GlobalFunctions.updateComponentsEdgeAdded(this, node1, e.getNode());
+		}		
+		
+		if (!edges.get(node1).add(e)) { //if edge is old
+			return false;
+		}
+		
+		return true;
+		
+	}	
+	
+	public void removeEdge(int node1, int node2) {
+		if(this.edges.containsKey(node1))
+			this.edges.get(node1).remove(node2);
+		if(this.edges.containsKey(node2))
+			this.edges.get(node2).remove(node1);
+		
+		if(this.getDegree(node1) == 0)
+			this.removeNode(node1);
+		
+		if(this.getDegree(node2) == 0)
+			this.removeNode(node2);
+		
+		if(this.COMPUTE_COMPONENTS_DYNAMICLY) {
+			GlobalFunctions.updateComponentsEdgeRemoved(this, node1, node2);
+		}			
+		
+	}
+		
+	public Integer[] getNodes() {
+		return this.edges.keySet().toArray(new Integer[0]);
+	}
+	
+	public HashSet<Integer> getNodeSet() {
+		return new HashSet<Integer>(this.edges.keySet());
+	}
+	
+	public Edge[] getEdges(int nodeId) {
+		return this.edges.get(nodeId).toArray();
+	}
+	
+	public Integer[] getNeighs(int nodeId) {
+		return this.edges.get(nodeId).keySet().toArray(new Integer[0]);
+	}	
+	
+	public int getDegree(int nodeId) {
+		if(this.edges.containsKey(nodeId))
+			return this.edges.get(nodeId).size();
+		return 0;
+	}
+	
+	public boolean existsEdge(int node1, int node2) {
+		return this.edges.get(node1).containsKey(node2);
+	}
+	
+	public void aggregateGraph(Graph g) {
+		Integer newNodes[] = g.getNodes();
+		for(int i=0; i<newNodes.length; i++) {
+			if(!this.edges.containsKey(newNodes[i])) {
+				this.addNode(newNodes[i]);
+			}
+			Edge newEdges[] = g.getEdges(newNodes[i]);
+			for(int j=0; j<newEdges.length; j++) {
+				this.addEdge(newNodes[i], newEdges[j]);
+			}
+		}
+	}
+	
+	public String toString() {
+		return "" + edges;
+	}
+	
+	
+
+}

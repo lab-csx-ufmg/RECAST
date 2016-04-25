@@ -1,0 +1,57 @@
+package network.graph;
+
+public class Edge {
+	
+	Integer node;
+	Double weight;
+	Long timeWillDie;
+	
+	public Edge(Integer node, Double weight) {
+		super();
+		this.node = node;
+		this.weight = weight;
+	}
+	
+	public Edge(Integer node, Double weight, Long timeToDie) {
+		super();
+		this.node = node;
+		this.weight = weight;
+		this.timeWillDie = timeToDie;
+	}
+	
+	public Integer getNode() {
+		return node;
+	}
+	public void setNode(Integer node) {
+		this.node = node;
+	}
+	public Double getWeight() {
+		return weight;
+	}
+	public void setWeight(Double weight) {
+		this.weight = weight;
+	}
+	
+	public void addWeight(Double weight) {
+		this.weight += weight;
+	}
+	
+	public void incrementEdge(Double weight, Long timeWillDie) {
+		this.weight += weight;
+		this.timeWillDie = timeWillDie;
+	}
+
+	public Long getTimeWillDie() {
+		return timeWillDie;
+	}
+
+	public void setTimeWillDie(Long timeToDie) {
+		this.timeWillDie = timeToDie;
+	}
+	
+	public String toString() {
+		return "(" + this.node + "," + this.weight + "," + this.timeWillDie + ")";
+	}
+	
+
+}

@@ -1,0 +1,7 @@
+path=./traces/yelp/
+filename=encounters-sorted.txt
+name=yelp
+timestep_size=7
+hour_size=0.0416666666666667
+infection_duration=7
+p_rand=0.27

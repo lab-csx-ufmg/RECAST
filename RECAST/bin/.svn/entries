@@ -1,0 +1,40 @@
+10
+
+dir
+329
+svn+ssh://pstancioli@scm.gforge.inria.fr/svn/dtnnc/trunk/DTN_SNA/SNA/src
+svn+ssh://pstancioli@scm.gforge.inria.fr/svn/dtnnc
+
+
+
+2011-05-19T15:24:03.474076Z
+307
+pstancioli
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1b3c89fc-f2f3-4e74-9ec7-dd8103e3b585
+
+converter
+dir
+
+network
+dir
+
+util
+dir
+
+scheduler
+dir
+

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="C:/Users/Pedro/Dropbox/PEDRO/code/workspace/external jars/collections-generic-4.01.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Pedro/Dropbox/PEDRO/code/workspace/external jars/colt-1.2.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Pedro/Dropbox/PEDRO/code/workspace/external jars/commons-collections-3.2.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Pedro/Dropbox/PEDRO/code/workspace/external jars/commons-math-2.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Pedro/Dropbox/PEDRO/code/workspace/external jars/concurrent-1.3.4.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Pedro/Dropbox/PEDRO/code/workspace/external jars/j3d-core-1.3.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Pedro/Dropbox/PEDRO/code/workspace/external jars/jung-3d-2.0.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Pedro/Dropbox/PEDRO/code/workspace/external jars/jung-3d-demos-2.0.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Pedro/Dropbox/PEDRO/code/workspace/external jars/jung-algorithms-2.0.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Pedro/Dropbox/PEDRO/code/workspace/external jars/jung-api-2.0.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Pedro/Dropbox/PEDRO/code/workspace/external jars/jung-graph-impl-2.0.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Pedro/Dropbox/PEDRO/code/workspace/external jars/jung-io-2.0.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Pedro/Dropbox/PEDRO/code/workspace/external jars/jung-jai-2.0.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Pedro/Dropbox/PEDRO/code/workspace/external jars/jung-jai-samples-2.0.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Pedro/Dropbox/PEDRO/code/workspace/external jars/jung-samples-2.0.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Pedro/Dropbox/PEDRO/code/workspace/external jars/jung-visualization-2.0.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Pedro/Dropbox/PEDRO/code/workspace/external jars/stax-api-1.0.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Pedro/Dropbox/PEDRO/code/workspace/external jars/vecmath-1.3.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Pedro/Dropbox/PEDRO/code/workspace/external jars/wstx-asl-3.2.6.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

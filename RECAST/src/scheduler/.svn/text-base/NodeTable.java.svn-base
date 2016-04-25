@@ -1,0 +1,18 @@
+package scheduler;
+
+import java.util.HashMap;
+
+public class NodeTable {
+	
+	HashMap<String,Integer> table = new HashMap<String,Integer>();
+	Integer nodeCount = 0;
+	
+	public Integer getNode(String nodeCode) {
+		if(table.containsKey(nodeCode))
+			return table.get(nodeCode);
+		nodeCount++;
+		table.put(nodeCode, nodeCount);
+		return nodeCount;
+	}
+
+}

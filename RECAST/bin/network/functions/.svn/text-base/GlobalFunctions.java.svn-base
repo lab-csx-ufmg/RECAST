@@ -1,0 +1,110 @@
+package network.functions;
+
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+
+import network.graph.Graph;
+
+public class GlobalFunctions {
+	
+	
+	public static int getMaxFullyDisconnectedDegree(Graph g) {
+		return (int) IndividualFunctions.getFullyDisconnectedDegrees(g).getMax();
+	}
+	
+	public static HashSet<Integer> getReachableNodes(Graph g, int node) {
+		
+		HashSet<Integer> visited = new HashSet<Integer>();
+		LinkedList<Integer> list = new LinkedList<Integer>();
+		list.add(node);
+		
+		while(!list.isEmpty()) {
+			int v = list.removeFirst();
+			visited.add(v);
+			Integer neighs[] = g.getNeighs(v);
+			for(int i=0;i<neighs.length;i++)
+				if(!visited.contains(neighs[i])){
+					list.addLast(neighs[i]);
+				}
+		}
+		
+		return visited;
+		
+	}
+	
+	public static void updateNodesComponentLabel(Graph g, HashSet<Integer> nodes, int cLabel) {
+		Iterator<Integer> iNodes = nodes.iterator();
+		while(iNodes.hasNext())
+			g.getNode(iNodes.next()).setComponentLabel(cLabel);
+	}
+	
+	public static int getNumberOfComponents(Graph g) {
+		int n=0;
+		
+		HashSet<Integer> nodes = g.getNodeSet();
+		
+		while(!nodes.isEmpty()) {
+			int v = nodes.iterator().next();
+			int compLabel = g.getNode(v).getComponentLabel();
+			HashSet<Integer> reachedNodes = GlobalFunctions.getReachableNodes(g, v);
+			n++;
+			
+			//update the component label of the reached nodes
+			GlobalFunctions.updateNodesComponentLabel(g, reachedNodes, compLabel);
+			
+			nodes.removeAll(reachedNodes);
+		}
+		
+		return n;
+	}
+	
+	public static void updateComponentsEdgeAdded(Graph g, int v1, int v2) {
+		//if labels are identical, do nothing
+		int c1 = g.getNode(v1).getComponentLabel();
+		int c2 = g.getNode(v2).getComponentLabel();
+		if(c1 != c2) {
+			if(g.getComponentSize(c1) < g.getComponentSize(c2)) {
+				HashSet<Integer> reachedNodes = GlobalFunctions.getReachableNodes(g, v1);
+				GlobalFunctions.updateNodesComponentLabel(g, reachedNodes, c2);		
+				g.mergeComponents(c2, c1);
+			}
+			else {
+				HashSet<Integer> reachedNodes = GlobalFunctions.getReachableNodes(g, v2);
+				GlobalFunctions.updateNodesComponentLabel(g, reachedNodes, c1);
+				g.mergeComponents(c1, c2);
+			}
+
+		}
+	}
+	
+	public static void updateComponentsEdgeRemoved(Graph g, int v1, int v2) {	
+		HashSet<Integer> reachedNodes = GlobalFunctions.getReachableNodes(g, v1);
+		g.updateComponentSize(g.getNode(v1).getComponentLabel(), reachedNodes.size());
+		if(!reachedNodes.contains(v2)) {
+			int c2 = g.getNewComponentLabel();
+			reachedNodes = GlobalFunctions.getReachableNodes(g, v2);
+			GlobalFunctions.updateNodesComponentLabel(g, reachedNodes, c2);
+			g.updateComponentSize(c2, reachedNodes.size());
+		}
+	}
+	
+	public static void main(String[] args) {
+		Graph g = new Graph();
+		
+		g.addEdge(1, 2);
+		g.addEdge(1, 4);
+		g.addEdge(4, 5);
+		
+		g.addEdge(3, 6);
+		g.addEdge(6, 9);
+		
+		g.addEdge(6, 7);
+		g.addEdge(7, 11);
+
+		
+		System.out.println(GlobalFunctions.getNumberOfComponents(g));
+
+	}
+
+}
