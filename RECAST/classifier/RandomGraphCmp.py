@@ -1,12 +1,17 @@
 '''
 Created on Jan 13, 2012
 
-@author: Pedro
+@author: Pedro Olmo
+Modified by Michele A. Brandao
 '''
 
 import networkx as nx
 from scipy import stats
 from MathUtil import myround
+from datetime import datetime
+from multiprocessing import Pool
+
+
 
 class RandomGraphComparator(object):
     '''
@@ -22,8 +27,8 @@ class RandomGraphComparator(object):
         self.perCache = {}
         self.topct = []
         self.topctCache = {}
-        
-     
+
+    
       
     def get_per_rnd_pct(self, per_value):
         per_value = myround(per_value)
@@ -42,9 +47,11 @@ class RandomGraphComparator(object):
             p = stats.percentileofscore(self.per, topct_value)
             self.topctCache[topct_value] = p
         return 100-p    
-
-        
+  
     def read_rnd_network_files(self, db):
+        
+        #Multiprocessing
+        pool = Pool()
 
         time = db.get_final_time()
         num_files = db.get_num_random_files()
@@ -53,16 +60,35 @@ class RandomGraphComparator(object):
         self.perCache = {}
         self.topctCache = {}
         
-        filename = pathD + db.get_rnd_graph_name(0, time)
+        filename = pathD + db.get_rnd_graph_name(1, time)
         G=nx.read_edgelist(filename, nodetype = int, data=(('per',float),('weight',float),('topct',float),('to',float),('degreei',float),('degreej',float),))
         self.topct = nx.get_edge_attributes(G,'topct').values()
         self.per = nx.get_edge_attributes(G,'per').values()
         
         for seed in range(0,num_files):
             print("reading file " + str(seed))
+            start_time = datetime.now()
             filename = pathD + db.get_rnd_graph_name(seed, time)
+            end_time = datetime.now()
+            print('Duration reading file: {0}'.format(end_time - start_time))
+    
+            print ">> Filename: "+filename
             G=nx.read_edgelist(filename, nodetype = int, data=(('per',float),('weight',float),('topct',float),('to',float),('degreei',float),('degreej',float),))
-            self.topct.extend(nx.get_edge_attributes(G,'topct').values())
-            self.per.extend(nx.get_edge_attributes(G,'per').values())
+            
+            print ">> Armazenou em G"
+            
+           
+            start_time = datetime.now()
+            pool.apply_async(self.topct.extend(nx.get_edge_attributes(G,'topct').values()))
+            #self.topct.extend(nx.get_edge_attributes(G,'topct').values())
+            pool.apply_async(self.per.extend(nx.get_edge_attributes(G,'per').values()))
+            #self.per.extend(nx.get_edge_attributes(G,'per').values())
+            
+            
+            end_time = datetime.now()
+            print('Duration extend: {0}'.format(end_time - start_time))
+            
+        pool.close()
+        pool.join()
             
         
