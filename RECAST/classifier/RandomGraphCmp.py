@@ -65,12 +65,14 @@ class RandomGraphComparator(object):
         filename = pathD + db.get_rnd_graph_name(1, time)
         
         #Using pandas to improve memory use for large graphs
-        df = pd.read_csv(filename,header=None,delim_whitespace=True,names=['node1','node2','per','weight','topct','to','degreei','degreej'])
+        df = pd.read_csv(filename,header=None,delim_whitespace=True,names=['node1','node2','per','weight','topct','to','degreei','degreej'],dtype={'node1': np.int, 'node2': np.int,'per':np.float,'weight':np.float,'topct':np.float,'to':np.int,'degreei':np.int,'degreej':np.int},low_memory=True, buffer_lines=None, memory_map=False, float_precision=None)
+        
         
         #G=nx.read_edgelist(filename, nodetype = int, data=(('per',float),('weight',float),('topct',float),('to',float),('degreei',float),('degreej',float),))
 
         
         G = nx.Graph()
+        #G.add_weighted_edges_from([tuple(x,y,z,w,t,r) for x,y,z,w,t,r in df.values])
         G = nx.from_pandas_dataframe(df, 'node1', 'node2', ['per','weight','topct','to','degreei','degreej'])
         print G.edges
 
@@ -87,13 +89,15 @@ class RandomGraphComparator(object):
 
             
             #Using pandas to improve memory use for large graphs
-            df = pd.read_csv(filename,header=None,delim_whitespace=True,names=['node1','node2','per','weight','topct','to','degreei','degreej'])
+            df = pd.read_csv(filename,header=None,delim_whitespace=True,names=['node1','node2','per','weight','topct','to','degreei','degreej'],dtype={'node1': np.int, 'node2': np.int,'per':np.float,'weight':np.float,'topct':np.float,'to':np.int,'degreei':np.int,'degreej':np.int},low_memory=True, buffer_lines=None, memory_map=False, float_precision=None)
+            
             
             print df
             
             #G=nx.read_edgelist(filename, nodetype = int, data=(('per',float),('weight',float),('topct',float),('to',float),('degreei',float),('degreej',float),))
             
             G = nx.Graph()
+            #G.add_weighted_edges_from([tuple(x,y,z,w,t,r) for x,y,z,w,t,r in df.values])
             G = nx.from_pandas_dataframe(df, 'node1', 'node2', ['per','weight','topct','to','degreei','degreej'])
             print G.edges
             
