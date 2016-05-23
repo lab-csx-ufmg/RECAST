@@ -10,6 +10,8 @@ from scipy import stats
 from MathUtil import myround
 from datetime import datetime
 from multiprocessing import Pool
+import pandas as pd
+import numpy as np
 
 
 
@@ -61,30 +63,51 @@ class RandomGraphComparator(object):
         self.topctCache = {}
         
         filename = pathD + db.get_rnd_graph_name(1, time)
-        G=nx.read_edgelist(filename, nodetype = int, data=(('per',float),('weight',float),('topct',float),('to',float),('degreei',float),('degreej',float),))
+        
+        #Using pandas to improve memory use for large graphs
+        df = pd.read_csv(filename,header=None,delim_whitespace=True,names=['node1','node2','per','weight','topct','to','degreei','degreej'])
+        
+        #G=nx.read_edgelist(filename, nodetype = int, data=(('per',float),('weight',float),('topct',float),('to',float),('degreei',float),('degreej',float),))
+
+        
+        G = nx.Graph()
+        G = nx.from_pandas_dataframe(df, 'node1', 'node2', ['per','weight','topct','to','degreei','degreej'])
+        print G.edges
+
+
         self.topct = nx.get_edge_attributes(G,'topct').values()
         self.per = nx.get_edge_attributes(G,'per').values()
-        
+
         for seed in range(0,num_files):
             print("reading file " + str(seed))
             start_time = datetime.now()
             filename = pathD + db.get_rnd_graph_name(seed, time)
             end_time = datetime.now()
             print('Duration reading file: {0}'.format(end_time - start_time))
-    
-            print ">> Filename: "+filename
-            G=nx.read_edgelist(filename, nodetype = int, data=(('per',float),('weight',float),('topct',float),('to',float),('degreei',float),('degreej',float),))
+
             
+            #Using pandas to improve memory use for large graphs
+            df = pd.read_csv(filename,header=None,delim_whitespace=True,names=['node1','node2','per','weight','topct','to','degreei','degreej'])
+            
+            print df
+            
+            #G=nx.read_edgelist(filename, nodetype = int, data=(('per',float),('weight',float),('topct',float),('to',float),('degreei',float),('degreej',float),))
+            
+            G = nx.Graph()
+            G = nx.from_pandas_dataframe(df, 'node1', 'node2', ['per','weight','topct','to','degreei','degreej'])
+            print G.edges
+            
+
             print ">> Armazenou em G"
-            
-           
+
+
             start_time = datetime.now()
             pool.apply_async(self.topct.extend(nx.get_edge_attributes(G,'topct').values()))
             #self.topct.extend(nx.get_edge_attributes(G,'topct').values())
             pool.apply_async(self.per.extend(nx.get_edge_attributes(G,'per').values()))
             #self.per.extend(nx.get_edge_attributes(G,'per').values())
-            
-            
+
+
             end_time = datetime.now()
             print('Duration extend: {0}'.format(end_time - start_time))
             
