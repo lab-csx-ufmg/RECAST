@@ -26,7 +26,7 @@ def gen_random_graphs(db):
     
     a_args = i
     second_arg = db
-    pool.map(func_star, itertools.izip(a_args, itertools.repeat(second_arg)))
+    pool.map_async(func_star, itertools.izip(a_args, itertools.repeat(second_arg)))
     
     pool.close()
     pool.join()
